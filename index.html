@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Student Attendance Management System - Works Offline!">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Attendance System">
+    <title>Student Attendance System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23667eea' width='192' height='192'/><text x='50%' y='50%' font-size='80' fill='white' text-anchor='middle' dy='.3em' font-weight='bold'>📚</text></svg>">
+</head>
+<body>
+    <!-- ADMIN LOGIN SCREEN -->
+    <div id="adminLoginScreen" class="admin-screen active">
+        <div class="login-box">
+            <h1>🔐 Admin Login</h1>
+            <p>Enter admin password to manage students</p>
+            <input 
+                type="password" 
+                id="adminPassword" 
+                placeholder="Enter admin password" 
+                class="input-field"
+            >
+            <p class="hint-text">Hint: Default password is "admin123"</p>
+            <button id="adminLoginBtn" class="btn btn-primary">Login as Admin</button>
+            <button id="userModeBtn" class="btn btn-secondary">Continue as User</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="admin-panel hidden">
+        <div class="admin-header">
+            <h2>🛡️ Admin Panel - Manage System</h2>
+            <button id="logoutBtn" class="btn btn-danger">Logout</button>
+        </div>
+        
+        <div class="admin-content">
+            <!-- Admin Settings -->
+            <div class="admin-section">
+                <h3>⚙️ Admin Settings</h3>
+                <label>📷 Upload College Logo:</label>
+                <input 
+                    type="file" 
+                    id="adminLogoUpload" 
+                    accept="image/*" 
+                    class="input-field"
+                >
+                <div style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+                    <label>📝 Your Name (Admin):</label>
+                    <input type="text" id="adminNameInput" placeholder="Admin name" class="input-field">
+                    <label style="margin-top: 10px; display: block;">👤 Your Roll Number (Admin):</label>
+                    <input type="text" id="adminRollInput" placeholder="Admin roll number" class="input-field">
+                    <button id="saveAdminSettingsBtn" class="btn btn-primary" style="margin-top: 10px;">Save Settings</button>
+                </div>
+            </div>
+
+            <!-- Add Student -->
+            <div class="admin-section">
+                <h3>Add New Student</h3>
+                <input type="text" id="adminStudentName" placeholder="Student Name" class="input-field">
+                <input type="text" id="adminStudentRoll" placeholder="Roll Number" class="input-field">
+                <button id="adminAddBtn" class="btn btn-primary">Add Student</button>
+            </div>
+
+            <!-- Student List -->
+            <div class="admin-section">
+                <h3>Current Students List</h3>
+                <div id="adminStudentsList" class="admin-students-list">
+                    <p>No students added yet</p>
+                </div>
+            </div>
+
+            <!-- Start Attendance -->
+            <div class="admin-section">
+                <button id="startAttendanceBtn" class="btn btn-success btn-large">Start Marking Attendance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="mainApp" class="main-app hidden">
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <div class="header-content">
+                    <div class="logo-container">
+                        <img id="collegeLogo" class="college-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23667eea' width='200' height='200' rx='20'/%3E%3Ctext x='100' y='110' font-size='60' fill='white' text-anchor='middle' font-weight='bold'%3E🎓%3C/text%3E%3C/svg%3E" alt="College Logo">
+                    </div>
+                    <div class="header-text">
+                        <h1>📚 Attendance Management System</h1>
+                        <h2 id="collegeName">Maharaja Agrasen University Baddi Institute of Technology</h2>
+                        <p id="collegeCode"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="college-settings" id="adminSettingsInApp">
+                <div class="logo-upload">
+                    <label for="logoUpload">📷 Upload College Logo:</label>
+                    <input 
+                        type="file" 
+                        id="logoUpload" 
+                        accept="image/*" 
+                        class="input-field"
+                    >
+                </div>
+                <div class="student-info-input">
+                    <div class="info-field">
+                        <label for="myNameInput">📝 Your Name:</label>
+                        <input 
+                            type="text" 
+                            id="myNameInput" 
+                            placeholder="Your full name" 
+                            class="input-field"
+                        >
+                    </div>
+                    <div class="info-field">
+                        <label for="studentRollInput">👤 Your Roll Number:</label>
+                        <input 
+                            type="text" 
+                            id="studentRollInput" 
+                            placeholder="e.g., 24011" 
+                            class="input-field"
+                        >
+                    </div>
+                    <button id="saveStudentInfoBtn" class="btn btn-primary-small">Save</button>
+                </div>
+            </div>
+            <div id="studentInfoDisplay" class="student-info-display"></div>
+        </div>
+
+        <!-- Add Student Section -->
+        <div class="section add-student-section">
+            <h2>Add New Student</h2>
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="studentName" 
+                    placeholder="Enter student name" 
+                    class="input-field"
+                >
+                <input 
+                    type="number" 
+                    id="rollNumber" 
+                    placeholder="Enter roll number" 
+                    class="input-field"
+                >
+                <button id="addBtn" class="btn btn-primary">Add Student</button>
+            </div>
+        </div>
+
+        <!-- Date Selection -->
+        <div class="section date-section">
+            <label for="attendanceDate">Select Date:</label>
+            <input 
+                type="date" 
+                id="attendanceDate" 
+                class="input-field"
+            >
+            <button id="clearDateBtn" class="btn btn-secondary">Clear</button>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3 id="totalStudents">0</h3>
+                <p>Total Students</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="presentCount">0</h3>
+                <p>Present Today</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="absentCount">0</h3>
+                <p>Absent Today</p>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="section">
+            <h2>Students List</h2>
+            
+            <!-- Search and Sort -->
+            <div class="search-sort-controls">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="🔍 Search by name or roll number..." 
+                        class="input-field"
+                    >
+                </div>
+                <button id="sortBtn" class="btn btn-secondary">↕️ Sort by Roll Number</button>
+            </div>
+
+            <div id="studentsList" class="students-list">
+                <p class="empty-message">No students added yet. Add a student to get started!</p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button id="exportBtn" class="btn btn-info">📊 Export Report</button>
+            <button id="resetBtn" class="btn btn-danger">🔄 Reset All</button>
+        </div>
+    </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div id="detailsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="detailsStudentName"></h2>
+            <div class="details-grid">
+                <p><strong>Roll Number:</strong> <span id="detailsRoll"></span></p>
+                <p><strong>Total Present:</strong> <span id="detailsPresent"></span></p>
+                <p><strong>Total Absent:</strong> <span id="detailsAbsent"></span></p>
+                <p><strong>Attendance %:</strong> <span id="detailsPercentage"></span></p>
+            </div>
+            <div id="detailsHistory" class="attendance-history"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- Service Worker Registration for Offline Support -->
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+              .then(reg => {
+                console.log('Service Worker registered successfully:', reg);
+              })
+              .catch(err => {
+                console.log('Service Worker registration failed:', err);
+              });
+        }
+        
+        // Install app prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('Install prompt ready');
+        });
+        
+        // Check if app is installed
+        window.addEventListener('appinstalled', () => {
+            console.log('App installed successfully');
+            alert('App installed! You can now use it offline. 🎉');
+        });
+    </script>
+</body>
+</html>
